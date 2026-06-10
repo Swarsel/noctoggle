@@ -149,12 +149,10 @@ async fn poll_device(
 async fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
-    let show_cmd = Arc::new(
-        env::var("SHOW_CMD").unwrap_or_else(|_| "noctalia-shell ipc call bar showBar".to_string()),
-    );
-    let hide_cmd = Arc::new(
-        env::var("HIDE_CMD").unwrap_or_else(|_| "noctalia-shell ipc call bar hideBar".to_string()),
-    );
+    let show_cmd =
+        Arc::new(env::var("SHOW_CMD").unwrap_or_else(|_| "noctalia msg bar-show".to_string()));
+    let hide_cmd =
+        Arc::new(env::var("HIDE_CMD").unwrap_or_else(|_| "noctalia msg bar-hide".to_string()));
 
     let trigger_keys_env =
         env::var("TRIGGER_KEYS").unwrap_or_else(|_| "KEY_LEFTMETA,KEY_RIGHTMETA".to_string());

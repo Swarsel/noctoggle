@@ -5,7 +5,7 @@ let
 in
 {
   options.services.noctoggle = {
-    enable = lib.mkEnableOption "noctoggle – a noctalia-shell topbar toggler";
+    enable = lib.mkEnableOption "noctoggle – a noctalia topbar toggler";
 
     systemdTarget = lib.mkOption {
       type = lib.types.str;
@@ -15,23 +15,23 @@ in
 
     noctaliaPackage = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.noctalia-shell;
+      default = pkgs.noctalia;
       description = ''
-        The noctalia-shell package to use.
-        This needs to match your noctalia-shell package exactly, otherwise the daemon will fail to find the attached noctalia-shell session.
+        The noctalia package used to locate the binary for the default show/hide commands.
+        Requires noctalia v5+; for v4, override showCommand and hideCommand with the old `ipc call` syntax.
       '';
     };
 
     showCommand = lib.mkOption {
       type = lib.types.str;
       description = "Command run when Super is first pressed.";
-      default = "${lib.getExe cfg.noctaliaPackage} ipc call bar showBar";
+      default = "${lib.getExe cfg.noctaliaPackage} msg bar-show";
     };
 
     hideCommand = lib.mkOption {
       type = lib.types.str;
       description = "Command run when Super is fully released.";
-      default = "${lib.getExe cfg.noctaliaPackage} ipc call bar hideBar";
+      default = "${lib.getExe cfg.noctaliaPackage} msg bar-hide";
     };
 
     triggerKeys = lib.mkOption {
@@ -47,7 +47,7 @@ in
   config = lib.mkIf cfg.enable {
 
     systemd.user.services.noctoggle = {
-      description = "noctoggle – noctalia-shell topbar Super-key toggle";
+      description = "noctoggle – noctalia topbar Super-key toggle";
       partOf = [ cfg.systemdTarget ];
       after = [ cfg.systemdTarget ];
       wantedBy = [ cfg.systemdTarget ];

@@ -33,7 +33,7 @@ Then, inside a module:
 
 ```ini
 [Unit]
-Description=noctoggle – automatic noctalia-shell topbar toggle
+Description=noctoggle – automatic noctalia topbar toggle
 After=graphical-session.target
 PartOf=graphical-session.target
 
@@ -48,20 +48,14 @@ WantedBy=graphical-session.target
 
 ### Configuration
 
-To use this out of the box, you will need noctalia-shell v4.4.0+, which added the `non_exclusive` display mode for the topbar (and I think also the `bar showBar` and `bar hideBar` IPC commands). On earlier versions, you will need to use the `always` display mode and use the `bar toggle` IPC command instead, it will not be pleasing visually, as windows will resize to accomodate the topbar.
+To use this out of the box, you will need noctalia v5+, which uses the `noctalia msg bar-show` and `noctalia msg bar-hide` IPC commands together with `reserve_space = false` on the bar. On noctalia-shell v4 (the quickshell-based version), override the show/hide commands with the old syntax (`noctalia-shell ipc call bar showBar` / `hideBar`) and use the `non_exclusive` display mode.
 
 `noctoggle` works by monitoring input devices via `evdev`, which requires read access to `/dev/input/event*`. For that, you will need to add your user to the `input` group.
 
-You also need to make sure that the `noctalia-shell` package used by `noctoggle` is the same as the one used by your system. This is important when you are overriding the `noctalia-shell` package in your system configuration to add e.g. calendar support. In that case, you either need to perform your overrides as an overlay, or you need to pass the same overriden package to `config.services.noctoggle.noctaliaPackage` as well. Otherwise you will get an error along the lines of
-
-```
-No running instances for "/nix/store/[...]-noctalia-shell-[...]/share/noctalia-shell/shell.qml"
-```
-
 You can customize the commands executed on key press/release and the trigger keys via environment variables or NixOS options.
 
-- `SHOW_CMD` / `services.noctoggle.showCommand`: Command to run when trigger is pressed (default: `noctalia-shell ipc call bar showBar`)
-- `HIDE_CMD` / `services.noctoggle.hideCommand`: Command to run when trigger is released (default: `noctalia-shell ipc call bar hideBar`)
+- `SHOW_CMD` / `services.noctoggle.showCommand`: Command to run when trigger is pressed (default: `noctalia msg bar-show`)
+- `HIDE_CMD` / `services.noctoggle.hideCommand`: Command to run when trigger is released (default: `noctalia msg bar-hide`)
 - `TRIGGER_KEYS` / `services.noctoggle.triggerKeys`: Comma-separated list (env) or list of strings (Nix) of keys that trigger the toggle (default: `KEY_LEFTMETA,KEY_RIGHTMETA`). You can also use raw key codes, e.g. `0x30` or `48`.
 
 > [!NOTE]
